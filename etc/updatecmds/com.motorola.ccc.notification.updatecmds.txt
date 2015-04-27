@@ -1,0 +1,16 @@
+# Migrate data to the new package from the old one
+
+com.motorola.ccc.notification:com.motorola.blur.service.blur
+    databases/notificationDB
+
+com.motorola.ccc.notification:com.motorola.blur.service.blur
+    databases/notificationDB-journal
+
+com.motorola.ccc.notification:com.motorola.blur.service.blur
+    databases/registrationDB
+
+com.motorola.ccc.notification:com.motorola.blur.service.blur
+    databases/registrationDB-journal
+
+com.motorola.ccc.notification:com.motorola.blur.service.blur
+    shared_prefs/SundryService.xml

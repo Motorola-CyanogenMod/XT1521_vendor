@@ -1,0 +1,135 @@
+#!/system/bin/sh
+
+doLog(){
+    log -p $1 -t bug2go-bugreport-oem $2
+}
+
+collectAplogd(){
+    doLog d "Collecting aplogd logs"
+    # Grab the system logs.
+    aplogcat --dump --output ${outputPath}/aplogcat- --temp ${outputPath} --bytes 100M
+    # Grab the logs left by aplogd itself (for debugging missing log issues).
+    cat /data/aplogd/aplogd-log.bak.txt > ${outputPath}/aplogd-log.txt
+    cat /data/aplogd/aplogd-log.txt >> ${outputPath}/aplogd-log.txt
+    chmod 640 ${outputPath}/aplogd-log.txt
+}
+
+collectBatteryTracer(){
+    doLog d "Collecting Battery Tracer logs"
+    local battTracerLocs="\
+        /storage/sdcard0/batterytracer/databases/current\
+        /storage/sdcard0/batterytracer/databases/backup0\
+        /data/data/com.motorola.tools.batterytracersdcard/databases/current\
+        /data/data/com.motorola.tools.batterytracersdcard/databases/backup0"
+    for loc in $battTracerLocs; do
+        for file in $(ls $loc/BT*.btd); do
+            outFile=BT${file#*BT};
+            cp $file ${outputPath}/${outFile}
+            chmod 640 ${outputPath}/${outFile}
+        done
+    done
+}
+
+collectDontpanic(){
+    doLog d "Collecting dontpanic logs"
+    for file in $(ls /data/dontpanic/)
+    do
+        cp /data/dontpanic/$file ${outputPath}/${file}
+        chmod 640 ${outputPath}/${file}
+    done
+}
+
+collectSbcm(){
+    doLog d "Collecting SBCM logs"
+    for file in SBCM_logfile.bin SBCM_logfile_old.bin
+    do
+        cp /data/battd/$file ${outputPath}/${file}
+        chmod 640 ${outputPath}/${file}
+    done
+}
+
+collectPowerSupplyLogger(){
+    doLog d "Collecting Power Supply Logger logs"
+    for file in power_supply_info.bin old_power_supply_info.bin
+    do
+        cp /data/power_supply_logger/$file ${outputPath}/${file}
+        chmod 640 ${outputPath}/${file}
+    done
+}
+
+collectBp(){
+    # Grab the last 200 MB of logs if the logger is active.
+    case $(getprop persist.sys.diag_mdlog.on) in
+    1)
+        doLog d "Collecting BP logs"
+        diag_mdlog-getlogs -o $outputPath -b 209715200
+    ;;
+    esac
+}
+
+collectAov(){
+    # Always on Voice
+    if [ -d /data/adspd/ ];
+    then
+        cd /data/adspd/
+        for file in $(ls *.bin *.pcm *.wav *.txt)
+        do
+            cp $file ${outputPath}/${file}
+            chmod 640 ${outputPath}/${file}
+            mv $file $file.b2g
+        done
+        cd -
+    fi
+}
+
+collectEnergyMonitor(){
+    doLog d "Collecting EnergyMonitor logs"
+
+    energyMonitorHome="/storage/sdcard0/energy_monitor"
+    energyMonitorReport="${outputPath}/sdcard_energy_monitor_enmon_report.tar"
+
+    if [ ! -d "${energyMonitorHome}" ]
+    then
+        return
+    fi
+
+    # Energy monitor data files have suffix .bin
+    emFileList=""
+    for f in $(ls ${energyMonitorHome}/*.bin 2>/dev/null)
+    do
+        emFileList="${emFileList} ${f##*/}"
+    done
+    if [ ! -z "${emFileList}" ]
+    then
+        /system/bin/busybox tar cf $energyMonitorReport -C $energyMonitorHome ${emFileList}
+    fi
+}
+
+collectIplog(){
+    doLog d "Collecting ip logs"
+    /system/xbin/tcpdump -i any -s 0 -w ${outputPath}/tcpdump.pcap &
+    sleep 1
+    echo "ping -c 2 -w 5 www.google.com" &>> ${outputPath}/ping.log
+    ping -c 2 -w 5 www.google.com &>> ${outputPath}/ping.log
+    echo "ping -c 2 -w 5 8.8.8.8" &>> ${outputPath}/ping.log
+    ping -c 2 -w 5 8.8.8.8 &>> ${outputPath}/ping.log
+    kill %?tcpdump
+    wait %?tcpdump
+}
+reportId=$1
+outputPath=$2
+
+if [ "$(getprop ro.bug2go.external_mode)" != "true" ]
+then
+    collectAplogd
+    collectBatteryTracer
+    collectDontpanic
+    collectSbcm
+    collectPowerSupplyLogger
+    collectBp
+    collectAov
+    collectEnergyMonitor
+    collectIplog
+else
+    collectAplogd
+fi

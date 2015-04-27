@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<permissions>
+    <feature name="com.motorola.software.device.surnia_uds" />
+    <feature name="com.motorola.software.product.surnia_retasia_ds" />
+    <feature name="com.motorola.software.fingerprint.motorola/surnia_retasia_ds/surnia_uds:5.0.2/LXI22.50-53.1/1:user/test-keys" />
+</permissions>

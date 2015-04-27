@@ -1,0 +1,27 @@
+# Update commands script for data migration from Assist to Moto
+
+###########################
+# Data migration for Assist
+###########################
+
+# Assist shared preferences
+com.motorola.moto:com.motorola.contextual.smartrules2
+    shared_prefs/com.motorola.contextaware_preferences.xml
+
+# Assist database
+com.motorola.moto:com.motorola.contextual.smartrules2
+    databases/assist.db
+
+#######################
+# Data migration for CE
+#######################
+
+# CE shared preferences
+com.motorola.moto:com.motorola.context
+    shared_prefs/com.motorola.context.engine.xml
+
+# CE database folder
+com.motorola.moto:com.motorola.context
+    databases
+
+

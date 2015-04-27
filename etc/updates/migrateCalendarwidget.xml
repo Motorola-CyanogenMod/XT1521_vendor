@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone='yes' ?>
+    <updates>
+        <package old="com.android.calendar">
+            <widget
+                newpackage="com.google.android.calendar"
+                oldclass="com.android.calendar.widget.CalendarAppWidgetProvider"
+                newclass="com.android.calendar.widget.CalendarAppWidgetProvider" />
+        </package>
+    </updates>

@@ -1,0 +1,4 @@
+# Migrate data to the new package from the old one
+
+com.motorola.multisimsettings:com.motorola.msimsettings
+    shared_prefs

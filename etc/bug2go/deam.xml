@@ -1,0 +1,2714 @@
+<?xml version="1.0" encoding="GBK"?>
+<deam version="1.0" xmlns="http://www.motorola.com/bug2go">
+    <namespace_dictionary>
+        <tag type="dropbox" name="KERNEL_PANIC">
+            <namespace>Kernel Panic</namespace>
+        </tag>
+        <tag type="dropbox" name="SYSTEM_WDT_RESET">
+            <namespace>Kernel Panic</namespace>
+        </tag>
+        <tag type="dropbox" name="system_app_crash">
+            <namespace>App Crash</namespace>
+        </tag>
+        <tag type="dropbox" name="data_app_crash">
+            <namespace>App Crash</namespace>
+        </tag>
+        <tag type="dropbox" name="system_app_anr">
+            <namespace>App Not Responding</namespace>
+        </tag>
+        <tag type="dropbox" name="data_app_anr">
+            <namespace>App Not Responding</namespace>
+        </tag>
+    </namespace_dictionary>
+    <tag type="dropbox" name="CALL_DROP">
+        <scenario name="Dropped Call">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="CALL_ORIG_FAILURE">
+        <scenario name="Call Origination Failure">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="VOLTE_FALLBACK">
+        <scenario name="VoLTE Fallback">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="SYSTEM_RESTART">
+        <!-- The point of this scenario is to grab the state of the system 5 minutes after a
+            System Server reset, so that we can compare with the state immediately after the
+            reset.  By creating a different scenario name, users of the Bug2go server also
+            have the ability to search on "Surfaceflinger" issues in a particular group or
+            software version. -->
+        <scenario name="Surfaceflinger Induced System Restart">
+            <filters>
+                <entry>
+                    <regex>^Subtype: sf_restart$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Sleep for 5 minutes, to delay the processing of this scenario.  This will
+                        occupy one of the three threads in the Bug2Go DEAM-handling pool for this
+                        entire time, so hopefully we don't need that extra thread.-->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/sleep 300
+                            </arg>
+                        </args>
+                        <!-- Change the timeout to prevent this from getting killed. -->
+                        <timeout>360</timeout>
+                    </exec>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+        <!-- The point of this scenario is to grab the state of the system 5 minutes after a
+            System Server reset, so that we can compare with the state immediately after the
+            reset. -->
+        <scenario name="System Server Restart (5-minute Checkup)">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Sleep for 5 minutes, to delay the processing of this scenario.  This will
+                        occupy one of the three threads in the Bug2Go DEAM-handling pool for this
+                        entire time, so hopefully we don't need that extra thread.-->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/sleep 300
+                            </arg>
+                        </args>
+                        <!-- Change the timeout to prevent this from getting killed. -->
+                        <timeout>360</timeout>
+                    </exec>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP system_server_watchdog $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="App Not Responding">
+        <scenario name="App Not Responding (Google)">
+        <!-- Google is requiring us to submit full bugreports to them for any issues with their
+            apps.  We are doing this ONLY because they are requiring it.  The practice is
+            inefficient and generally wasteful, and should not be copied for other scenarios.
+        -->
+            <filters>
+                <entry>
+                    <!-- Ex: "Process: com.google.android.apps.books" -->
+                    <regex>^Process: (com.google.\S+|com.android.vending|com.android.chrome)$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/traces.txt</name>
+                    </file>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_anr $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+        <scenario name="App Not Responding">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/traces.txt</name>
+                    </file>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_anr $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="App Crash">
+        <scenario name="App Crash (Google)">
+        <!-- Google is requiring us to submit full bugreports to them for any issues with their
+            apps.  We are doing this ONLY because they are requiring it.  The practice is
+            inefficient and generally wasteful, and should not be copied for other scenarios.
+        -->
+            <filters>
+                <entry>
+                    <!-- Ex: "Process: com.google.android.apps.books" -->
+                    <regex>^Process: (com.google.\S+|com.android.vending|com.android.chrome)$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_crash $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>epochtime=$(date +%s); cd /data/misc;
+                                for file in $(ls heap-dump-*.hprof);
+                                do dumptime=${file##heap-dump-tm}; dumptime=${dumptime%-*.hprof};
+                                if [ "${dumptime//[^0-9]/}" -eq "$dumptime" ]; then dumptime=0;fi;
+                                let difftime="$epochtime-$dumptime";if [ $difftime -le 60 ];
+                                then cat $file >> $B2G_REPORT_DIR/$file; break; fi; done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+        <scenario name="App Crash">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_crash $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>epochtime=$(date +%s); cd /data/misc;
+                                for file in $(ls heap-dump-*.hprof);
+                                do dumptime=${file##heap-dump-tm}; dumptime=${dumptime%-*.hprof};
+                                if [ "${dumptime//[^0-9]/}" -eq "$dumptime" ]; then dumptime=0;fi;
+                                let difftime="$epochtime-$dumptime";if [ $difftime -le 60 ];
+                                then cat $file >> $B2G_REPORT_DIR/$file; break; fi; done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="SYSTEM_TOMBSTONE">
+        <scenario name="Tombstone (Google App)">
+        <!-- Google is requiring us to submit full bugreports to them for any issues with their
+            apps.  We are doing this ONLY because they are requiring it.  The practice is
+            inefficient and generally wasteful, and should not be copied for other scenarios.
+        -->
+            <filters>
+                <entry>
+                    <!-- Ex: "pid: 2450, tid: 3105  >>> com.google.android.talk <<<" -->
+                    <regex>^pid:\s*\d*,\s*tid:\s*\d*\s*>>>\s*(com.google.\S+|com.android.vending|com.android.chrome)\s*&lt;&lt;&lt;$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <!-- Do the coredump collection last, because it can take a long time. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # TODO Use $B2G_REPORT_TIMESTAMP instead of current time, once client supports it.
+                                # Save the current time immediately, so that it's most accurate.
+                                starttime=$(date +%s)
+                                echo "Script start time is $starttime"
+                                corepath=/storage/sdcard1/app_dump
+                                if [ ! -d "$corepath" ]; then corepath=/sdcard/app_dump; fi;
+                                cd $corepath
+                                if [ $? -ne 0 ]; then
+                                    echo "Could not cd to $corepath; aborting"
+                                    exit 1
+                                fi
+                                # Only continue if coredumps are enabled and formatted as expected.
+                                corepattern=$(cat /proc/sys/kernel/core_pattern)
+                                case "$corepattern" in
+                                "|/system/bin/coredump %e %p %t")
+                                    # Continue
+                                    ;;
+                                *)
+                                    echo "core_pattern not set as expected; aborting"
+                                    echo "/proc/sys/kernel/core_pattern: $corepattern"
+                                    exit 1
+                                esac
+                                # Wait up to 30 seconds for a coredump file to appear.
+                                numtries=0
+                                maxtries=30
+                                while [ $numtries -lt $maxtries ]; do
+                                    let numtries=$numtries+1
+                                    echo "-- Poll coredump file(s): #$numtries"
+                                    # Collect any coredumps newer than 60 seconds prior to the start of this script.
+                                    for file in $(ls *.gz); do
+                                        dumptime=${file##*_}
+                                        dumptime=${dumptime%.core.gz}
+                                        if [ "${dumptime//[^0-9]/}" -eq "$dumptime" ]; then
+                                            dumptime=0
+                                        fi
+                                        let difftime="$starttime-$dumptime"
+                                        if [ "$difftime" -le 60 ]; then
+                                            # There might be more than one that matches, so just grab them all for now.
+                                            # TODO Extract the PID from the DropBox entry and find the file using that.
+                                            coredumps="$coredumps $file"
+                                        fi
+                                    done
+                                    case $coredumps in
+                                    "")
+                                        echo "No coredump(s) yet..."
+                                        ;;
+                                    *)
+                                        echo "Found $coredumps; proceeding"
+                                        busybox stat $coredumps
+                                        break
+                                    esac
+                                    sleep 1
+                                done
+                                case $coredumps in
+                                "")
+                                    echo "Gave up waiting for coredump(s) to appear; aborting"
+                                    exit 1
+                                esac
+                                # Wait up to 120 seconds for any in-progress coredumps to complete.
+                                numtries=0
+                                maxtries=120
+                                while [ $numtries -lt $maxtries ]; do
+                                    let numtries=$numtries+1
+                                    echo "-- Poll coredump complete: #$numtries"
+                                    ps | busybox grep "/system/bin/coredump$"
+                                    case $? in
+                                    0)
+                                        echo "coredump still running"
+                                        ;;
+                                    *)
+                                        echo "coredump finished; proceeding"
+                                        break
+                                    esac
+                                    sleep 1
+                                done
+                                # Proceed even if coredump is still running, because the logic above does not handle
+                                # the case where multiple tombstones happen at the same time, in which case another
+                                # instance of coredump may have started.
+                                if [ $numtries -eq $maxtries ]; then
+                                    echo "Gave up waiting for coredump to finish; proceeding anyway"
+                                fi
+                                for file in $coredumps; do
+                                    busybox stat $file
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                done
+                            </arg>
+                        </args>
+                        <output>coredump-err.txt</output>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP native_crash $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+        <scenario name="Tombstone">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <!-- Do the coredump collection last, because it can take a long time. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # TODO Use $B2G_REPORT_TIMESTAMP instead of current time, once client supports it.
+                                # Save the current time immediately, so that it's most accurate.
+                                starttime=$(date +%s)
+                                echo "Script start time is $starttime"
+                                corepath=/storage/sdcard1/app_dump
+                                if [ ! -d "$corepath" ]; then corepath=/sdcard/app_dump; fi;
+                                cd $corepath
+                                if [ $? -ne 0 ]; then
+                                    echo "Could not cd to $corepath; aborting"
+                                    exit 1
+                                fi
+                                # Only continue if coredumps are enabled and formatted as expected.
+                                corepattern=$(cat /proc/sys/kernel/core_pattern)
+                                case "$corepattern" in
+                                "|/system/bin/coredump %e %p %t")
+                                    # Continue
+                                    ;;
+                                *)
+                                    echo "core_pattern not set as expected; aborting"
+                                    echo "/proc/sys/kernel/core_pattern: $corepattern"
+                                    exit 1
+                                esac
+                                # Wait up to 30 seconds for a coredump file to appear.
+                                numtries=0
+                                maxtries=30
+                                while [ $numtries -lt $maxtries ]; do
+                                    let numtries=$numtries+1
+                                    echo "-- Poll coredump file(s): #$numtries"
+                                    # Collect any coredumps newer than 60 seconds prior to the start of this script.
+                                    for file in $(ls *.gz); do
+                                        dumptime=${file##*_}
+                                        dumptime=${dumptime%.core.gz}
+                                        if [ "${dumptime//[^0-9]/}" -eq "$dumptime" ]; then
+                                            dumptime=0
+                                        fi
+                                        let difftime="$starttime-$dumptime"
+                                        if [ "$difftime" -le 60 ]; then
+                                            # There might be more than one that matches, so just grab them all for now.
+                                            # TODO Extract the PID from the DropBox entry and find the file using that.
+                                            coredumps="$coredumps $file"
+                                        fi
+                                    done
+                                    case $coredumps in
+                                    "")
+                                        echo "No coredump(s) yet..."
+                                        ;;
+                                    *)
+                                        echo "Found $coredumps; proceeding"
+                                        busybox stat $coredumps
+                                        break
+                                    esac
+                                    sleep 1
+                                done
+                                case $coredumps in
+                                "")
+                                    echo "Gave up waiting for coredump(s) to appear; aborting"
+                                    exit 1
+                                esac
+                                # Wait up to 120 seconds for any in-progress coredumps to complete.
+                                numtries=0
+                                maxtries=120
+                                while [ $numtries -lt $maxtries ]; do
+                                    let numtries=$numtries+1
+                                    echo "-- Poll coredump complete: #$numtries"
+                                    ps | busybox grep "/system/bin/coredump$"
+                                    case $? in
+                                    0)
+                                        echo "coredump still running"
+                                        ;;
+                                    *)
+                                        echo "coredump finished; proceeding"
+                                        break
+                                    esac
+                                    sleep 1
+                                done
+                                # Proceed even if coredump is still running, because the logic above does not handle
+                                # the case where multiple tombstones happen at the same time, in which case another
+                                # instance of coredump may have started.
+                                if [ $numtries -eq $maxtries ]; then
+                                    echo "Gave up waiting for coredump to finish; proceeding anyway"
+                                fi
+                                for file in $coredumps; do
+                                    busybox stat $file
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                done
+                            </arg>
+                        </args>
+                        <output>coredump-err.txt</output>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP native_crash $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="system_server_watchdog">
+        <scenario name="System Server Watchdog">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/traces_SystemServer_WDT.txt</name>
+                    </file>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP system_server_watchdog $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print SYSTEM_TOMBSTONE</args>
+                        <output>dropbox_TOMBSTONES.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="system_server_crash">
+        <scenario name="System Server Crash">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/traces.txt</name>
+                    </file>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_crash $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>epochtime=$(date +%s); cd /data/misc;
+                                for file in $(ls heap-dump-*.hprof);
+                                do dumptime=${file##heap-dump-tm}; dumptime=${dumptime%-*.hprof};
+                                if [ "${dumptime//[^0-9]/}" -eq "$dumptime" ]; then dumptime=0;fi;
+                                let difftime="$epochtime-$dumptime";if [ $difftime -le 180 ];
+                                then cat $file >> $B2G_REPORT_DIR/$file; break; fi; done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                      <args>
+                         <arg>-c</arg>
+                          <arg>cd /sys/kernel/debug/ion;
+                          if [ $? != 0 ]; then echo "debugfs not mounted"; exit 1; fi
+                          ps >> $B2G_REPORT_DIR/Process_list.txt;
+                          for file in $(ls);do echo "\n\n File contents of - $file " >>$B2G_REPORT_DIR/ION_Stats.txt;
+                          cat $file>>$B2G_REPORT_DIR/ION_Stats.txt;done</arg>
+                        </args>
+                     </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="system_server_anr">
+        <scenario name="System Server Not Responding">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/traces.txt</name>
+                    </file>
+                    <exec program="/system/bin/bugreport">
+                        <output>bugreport.txt</output>
+                        <timeout>300</timeout> <!-- 5 minutes max -->
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get extra logs from helsmond if available. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/helsmon start retrieve_extra_logs $B2G_REPORT_TIMESTAMP java_anr $B2G_REPORT_DIR
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="Kernel Panic">
+        <scenario name="Kernel Panic">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/dontpanic/</name>
+                    </file>
+                    <!-- We need to grab the aplogd logs from the last powerup, because a kernel
+                        panic results in an immediate device reboot. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--skip</arg>
+                            <arg>1</arg>
+                            <arg>--boots</arg>
+                            <arg>1</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="system_server_lowmem">
+        <!-- Collect Memory stats when all background(cached) apps have been killed. -->
+        <!-- The dropbox events are throttled in the framework to once per 1/2 hour -->
+        <!-- in Mot products and every 5 minutes in ASOP and Nexus products. -->
+        <scenario name="Memory Diagnostic Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/data/anr/lowmem00.txt</name>
+                    </file>
+                    <!-- Run SAPE standard memory stats script. -->
+                    <exec program="/system/xbin/sudo">
+                        <output>memstat-err.txt</output>
+                        <args>
+                            <arg>sh</arg>
+                            <arg>-c</arg>
+                            <arg>
+echo "MemState: " `/system/bin/date` >$B2G_REPORT_DIR/MDR.id
+getprop | busybox awk /firstboot/{print} >>$B2G_REPORT_DIR/MDR.id
+echo "==================================================" >>$B2G_REPORT_DIR/MDR.id
+echo " " >>$B2G_REPORT_DIR/MDR.id
+
+# Identity Info
+getprop | busybox awk /ro.build/{print} >>$B2G_REPORT_DIR/MDR.id
+echo " " >>$B2G_REPORT_DIR/MDR.id
+echo "==================================================" >>$B2G_REPORT_DIR/MDR.id
+
+
+# Uptime Info
+# echo "------ UPTIME (uptime) ------" >>$B2G_REPORT_DIR/MDR.id
+# getprop | busybox awk /firstboot/{print} >>$B2G_REPORT_DIR/MDR.id
+# echo "Phone time: " `date` >>$B2G_REPORT_DIR/MDR.id
+
+
+# Pss by OOM
+# echo "------ DALVIK MEMORY INFO (dumpsys meminfo) ------"
+dumpsys meminfo -a >$B2G_REPORT_DIR/dumpsys_meminfo
+
+# iostat
+# echo "------ iostat -------"
+busybox iostat >$B2G_REPORT_DIR/iostat
+
+# Memory Info
+# echo "------ MEMORY INFO (/proc/meminfo) ------"
+cat /proc/meminfo > $B2G_REPORT_DIR/proc_meminfo
+
+# Process Info
+# echo "------ PROCRANK (procrank) ------"
+procrank >$B2G_REPORT_DIR/procrank
+
+# KGSL Stats
+# echo "------ KGSL STATS (/d/kgsl/proc) ------"
+for file in $(ls /d/kgsl/proc);
+do
+   echo "\nProcess ID - $file " >>$B2G_REPORT_DIR/KGSL_stats
+   cat /proc/$file/status | grep Name >>$B2G_REPORT_DIR/KGSL_stats
+   cat /d/kgsl/proc/$file/mem >>$B2G_REPORT_DIR/KGSL_stats
+done
+
+# ION Info
+mount -t debugfs none_debugs /sys/kernel/debug
+# echo "------ ION INFO (/sys/kernel/debug/ion) ------"
+if [ -f /sys/kernel/debug/ion/check_all_bufs ]
+then
+   cat /sys/kernel/debug/ion/check_all_bufs >$B2G_REPORT_DIR/ION_stats
+fi
+for file in $(ls /sys/kernel/debug/ion/heaps/);
+  do echo "\n File contents of - $file "
+     cat /sys/kernel/debug/ion/$file >>$B2G_REPORT_DIR/ION_stats
+  done
+
+# Virtual Memory Info
+# echo "------ VIRTUAL MEMORY STATS (/proc/vmstat) ------"
+cat /proc/vmstat >$B2G_REPORT_DIR/proc_vmstat
+
+# VM Alloc Info
+# echo "------ VMALLOC INFO (/proc/vmallocinfo) ------"
+cat /proc/vmallocinfo >$B2G_REPORT_DIR/proc_vmallocinfo
+
+# Slab/Slub Info
+# echo "------ SLAB INFO (/proc/slabinfo) ------"
+cat /proc/slabinfo >$B2G_REPORT_DIR/proc_slabinfo
+
+# Zone Info
+echo "------ ZONEINFO (/proc/zoneinfo) ------"
+cat /proc/zoneinfo >$B2G_REPORT_DIR/proc_zoneinfo
+
+# Page Type Info
+# echo "------ PAGETYPEINFO (/proc/pagetypeinfo) ------"
+cat /proc/pagetypeinfo >$B2G_REPORT_DIR/proc_pagetypeinfo
+
+# Buddy List Info
+# echo "------ BUDDYINFO (/proc/buddyinfo) ------"
+cat /proc/buddyinfo >$B2G_REPORT_DIR/proc_buddyinfo
+
+# Kernel Log
+# echo "------ BUDDYINFO (/proc/buddyinfo) ------"
+/system/bin/dmesg >$B2G_REPORT_DIR/logcat.kernel.txt
+
+# Memory Regions Info
+# only on userdebug, eng
+# echo "------ REGION INFO (/d/memblock/) ------"
+echo "Memory Regions:" >$B2G_REPORT_DIR/dbgfs_memblock
+cat /d/memblock/memory >>$B2G_REPORT_DIR/dbgfs_memblock
+echo "Reserved Regions:" >>$B2G_REPORT_DIR/dbgfs_memblock
+cat /d/memblock/reserved >>$B2G_REPORT_DIR/dbgfs_memblock
+
+# Last KMsg Info
+# echo "------ LAST KMSG (/proc/last_kmsg) ------"
+cat /proc/last_kmsg >$B2G_REPORT_DIR/proc_last_kmsg
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from logcat. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get ftrace trace file. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>cat /sys/kernel/debug/tracing/trace > $B2G_REPORT_DIR/ftrace.txt</arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="MODEM_SILENT_PANIC">
+        <scenario name="RIVA Silent Panic">
+            <filters>
+                <entry>
+                    <regex>^Subtype: RivaPanic$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for dumpPath in /data/ss-ram-dumps/riva-dumps /storage/sdcard1/ss-ram-dumps/riva-dumps ; do
+                                    cd $dumpPath
+                                    if [ $? != 0 ]; then
+                                        continue
+                                    fi
+                                    for file in $(ls); do
+                                        if [ -d "$file" ]; then
+                                            lastFile=$file
+                                        fi
+                                    done
+                                    cd $lastFile
+                                    if [ $? != 0 ]; then
+                                        echo "Couldn't cd to $lastFile" >> $B2G_REPORT_DIR/$err.txt
+                                        continue
+                                    fi
+                                    for file in $(ls); do
+                                        cat $file >> $B2G_REPORT_DIR/$file
+                                    done
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+        <scenario name="Modem Silent Panic">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                path=/storage/sdcard1/ss-ram-dumps/bp-dumps
+                                if [ ! -d "$path" ]; then path=/data/ss-ram-dumps/bp-dumps; fi;
+                                cd $path; if [ $? != 0 ]; then exit 1; fi;
+                                for file in $(ls); do if [ -d "$file" ]; then lastFile=$file; fi;
+                                done; cd $lastFile; for file in $(ls);
+                                do cat $file >> $B2G_REPORT_DIR/$file; done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 20971520</arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+<!--
+To create fake audio logs:
+    touch /data/adspd/audio_log_0_12345.pcm
+    touch /data/adspd/audio_log_1_12345.pcm
+    touch /data/adspd/audio_log_2_12345.pcm
+    touch /data/adspd/audio_log_12345.pcm
+
+To create a fake DSP panic:
+    touch /data/adspd/dsp_panic_dump_12345.bin
+    echo "fake panic\nSubtype: aov_dsp_panic:" > /data/system/dropbox-add/SUBSYS_SILENT_PANIC:2:9876-12345
+
+To create a fake daemon panic:
+    echo "ADSPD version: fake-version\nSubtype: aov_adspd_panic: fake panic" > /data/system/dropbox-add/SUBSYS_SILENT_PANIC:2:9876-12345
+-->
+    <tag type="dropbox" name="SUBSYS_SILENT_PANIC">
+        <scenario name="AOV Silent Panic">
+            <filters>
+                <entry>
+                    <regex>^Subtype: (aov_dsp_panic|aov_adspd_panic):.*$</regex>
+                </entry>
+            </filters>
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- /data/adspd/dsp_panic_dump_*.bin -->
+                    <!-- /data/adspd/audio_log_*.pcm -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cd /data/adspd/
+                                if [ $? != 0 ]; then
+                                    exit 1
+                                fi
+                                for file in $(ls *.bin *.pcm); do
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                    mv $file $file.b2g
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+<!--
+To create fake enrollment logs:
+    touch /data/adspd/normal_2013-04-22_15-45-28.037-0500.wav
+    touch /data/adspd/normal_2013-04-22_15-47-28.037-0500.wav
+    touch /data/adspd/normal_2013-04-22_15-48-28.037-0500.wav
+    touch /data/adspd/enroll_2013-04-22_15-45-14.005-0500.txt
+    touch /data/adspd/custom_acoustic.raw
+    touch /data/adspd/custom_search.raw
+    touch /data/adspd/customphrase_acoustic_ma36BP.bin
+    touch /data/adspd/customphrase_search_ma36BP.bin
+
+To create a fake usage report:
+    echo "Subtype: enrollment" > /data/system/dropbox-add/AOV_REPORT:2:9876-12345
+-->
+    <tag type="dropbox" name="AOV_FALSING_REPORT">
+        <scenario name="AOV Falsing Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- /data/adspd/*.wav -->
+                    <!-- /data/adspd/*.txt -->
+                    <!-- /data/adspd/*.bin -->
+                    <!-- /data/adspd/*.raw -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cd /data/adspd/
+                                if [ $? != 0 ]; then
+                                    exit 1
+                                fi
+                                for file in $(ls *.wav *.txt *.bin *.raw); do
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                    mv $file $file.b2g
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from logcat. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get hardware info. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="AOV_REPORT">
+        <scenario name="AOV Usage Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- /data/adspd/*.wav -->
+                    <!-- /data/adspd/*.txt -->
+                    <!-- /data/adspd/*.bin -->
+                    <!-- /data/adspd/*.raw -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cd /data/adspd/
+                                if [ $? != 0 ]; then
+                                    exit 1
+                                fi
+                                for file in $(ls *.wav *.txt *.bin *.raw); do
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                    mv $file $file.b2g
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from logcat. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get hardware info. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="AOV_DAILY_REPORT">
+        <scenario name="AOV Daily Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- /data/adspd/*.wav -->
+                    <!-- /data/adspd/*.txt -->
+                    <!-- /data/adspd/*.bin -->
+                    <!-- /data/adspd/*.raw -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cd /data/adspd/
+                                if [ $? != 0 ]; then
+                                    exit 1
+                                fi
+                                for file in $(ls *.wav *.txt *.bin *.raw); do
+                                    cat $file >> $B2G_REPORT_DIR/$file
+                                    mv $file $file.b2g
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from logcat. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get hardware info. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="FILE_SYSTEM_ERROR">
+        <scenario name="File System Error">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="IMS_REGISTER_FAIL">
+        <scenario name="IMS REGISTRATION FAILURE">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="DATA_STALL">
+        <scenario name="DATA_STALL">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="DATA_STALL_WITH_PING_FAILURE">
+        <scenario name="Data Stall (ping failed)">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                    <!-- Get data stall log. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                path=/storage/sdcard1/ps_recovery_iplog
+                                if [ ! -d "$path" ]; then path=/sdcard/ps_recovery_iplog; fi;
+                                for file in $(ls $path); do
+                                    if [ ! -d "$path/$file" ]; then
+                                        cp $path/$file $B2G_REPORT_DIR
+                                    fi
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="MODEM_DIAGNOSTIC_REPORT">
+        <scenario name="MODEM_DIAGNOSTIC_REPORT">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="Modem_debug_upload">
+        <scenario name="Modem debug">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>diag_mdlog-getlogs -o $B2G_REPORT_DIR -b 209715200</arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="WIFI_STALL_FRAMEWORK_DETECTED">
+        <scenario name="WiFi Data Stall">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get system logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>100M</arg>
+                        </args>
+                    </exec>
+                    <!-- Grab logs that help debug aplogd itself. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                cat /data/aplogd/aplogd-log.bak.txt > aplogd-log.txt
+                                cat /data/aplogd/aplogd-log.txt >> aplogd-log.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/dumpsys">
+                        <args>dropbox --print</args>
+                        <output>dropbox.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                out=$B2G_REPORT_DIR/hardware_revisions.txt
+                                path=/data/hardware_revisions
+                                echo "FORMAT\n&lt;type>:&lt;vendor>:&lt;revision>:&lt;date/lot>:&lt;firmware revision>:&lt;extra info>\n" >> $out
+                                for file in $(ls $path); do
+                                    echo "$path/$file" >> $out
+                                    cat $path/$file >> $out
+                                    echo >> $out
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Get data stall log. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                path=/storage/sdcard1/ps_recovery_iplog
+                                if [ ! -d "$path" ]; then path=/sdcard/ps_recovery_iplog; fi;
+                                for file in $(ls $path); do
+                                    if [ ! -d "$path/$file" ]; then
+                                        cp $path/$file $B2G_REPORT_DIR
+                                    fi
+                                done
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="enmon_report">
+        <scenario name="Energy Monitor Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <file>
+                        <name>/sdcard/energy_monitor/enmon_report.zip</name>
+                    </file>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="gpu_ft_report">
+        <scenario name="GPU FT Report">
+            <actions>
+                <attach>
+                    <entry/>
+                    <exec program="/system/bin/timedexec">
+                        <args>
+                            <arg>10</arg>
+                            <arg>/system/bin/dumpsys</arg>
+                            <arg>SurfaceFlinger</arg>
+                        </args>
+                        <output>dumpsys_SurfaceFlinger.txt</output>
+                    </exec>
+                    <!-- Get system logs from logcat, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <!-- Sleep for 15 seconds to allow dropbox time to write and compress the snapshot-->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/sleep 15
+                            </arg>
+                        </args>
+                        <!-- Change the timeout to prevent this from getting killed. -->
+                        <timeout>20</timeout>
+                    </exec>
+                    <!-- Get the corresponding snapshot -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/dropboxhelper gpu_snapshot before $B2G_REPORT_TIMESTAMP > $B2G_REPORT_DIR/snapshot
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="mdp4_diag_timeout">
+        <scenario name="MDP4 Diag Timeout">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat & dmesg, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # Get system logs from logcat and dmesg.
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/timedexec">
+                        <args>
+                            <arg>10</arg>
+                            <arg>/system/bin/dumpsys</arg>
+                            <arg>SurfaceFlinger</arg>
+                        </args>
+                        <output>dumpsys_SurfaceFlinger.txt</output>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="mdss_diag_timeout">
+        <scenario name="MDSS Diag Timeout">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get system logs from logcat & dmesg, in case aplogd isn't running or the files aren't accessible. -->
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # Get system logs from logcat and dmesg.
+                                for buffer in main system radio events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/timedexec">
+                        <args>
+                            <arg>10</arg>
+                            <arg>/system/bin/dumpsys</arg>
+                            <arg>SurfaceFlinger</arg>
+                        </args>
+                        <output>dumpsys_SurfaceFlinger.txt</output>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="display_issue">
+        <scenario name="Display Issue Detected">
+            <actions>
+                <attach>
+                    <entry/>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>/system/xbin/sudo /system/bin/timedexec 10 /system/bin/screencap $B2G_REPORT_DIR/screenshot.png</arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/timedexec">
+                        <args>
+                            <arg>10</arg>
+                            <arg>/system/bin/dumpsys</arg>
+                            <arg>SurfaceFlinger</arg>
+                        </args>
+                        <output>dumpsys_SurfaceFlinger.txt</output>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # Get system logs from logcat and dmesg.
+                                for buffer in main system events crash; do
+                                    /system/bin/logcat -d -b $buffer -v threadtime > $B2G_REPORT_DIR/logcat.$buffer.txt
+                                done
+                                /system/bin/dmesg > $B2G_REPORT_DIR/dmesg.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                # Get full kernel log
+                                /system/bin/aplogcat -d -b kernel > $B2G_REPORT_DIR/kernel.log
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/getprop > $B2G_REPORT_DIR/getprop.txt
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+    <tag type="dropbox" name="SENSOR_LOGGER" >
+        <scenario name="SensorLogger Camera Gesture">
+            <actions>
+                <attach>
+                    <entry/>
+                    <!-- Get kernel logs from aplogd if available. -->
+                    <exec program="/system/bin/aplogcat">
+                        <output>aplogcat.txt</output>
+                        <args>
+                            <arg>--dump</arg>
+                            <arg>--buffer</arg>
+                            <arg>kernel</arg>
+                            <arg>--output</arg>
+                            <arg>./aplogcat-</arg>
+                            <arg>--temp</arg>
+                            <arg>./</arg>
+                            <arg>--bytes</arg>
+                            <arg>2M</arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                /system/bin/dmesg | grep -v SPI | grep -iE "CG |camera" > $B2G_REPORT_DIR/dmesg.kernel.txt
+                            </arg>
+                        </args>
+                    </exec>
+                    <exec program="/system/bin/sh">
+                        <args>
+                            <arg>-c</arg>
+                            <arg>
+                                LAST_LOG="/sdcard/SensorLoggerData/LatestLog.txt"
+                                if [ -f "$LAST_LOG" ]; then
+                                    LAST_LOG_N=$(cat "$LAST_LOG")
+                                    if [ -f "$LAST_LOG_N" ]; then
+                                        cp "$LAST_LOG_N" $B2G_REPORT_DIR
+                                    fi
+                                fi
+                            </arg>
+                        </args>
+                    </exec>
+                </attach>
+            </actions>
+        </scenario>
+    </tag>
+</deam>
